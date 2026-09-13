@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Theme tokens.
+ *
+ * Every colour the interface uses is declared here once per theme; components
+ * only ever reference the role (`ink-500`, `surface`, `state-waiting`). The
+ * root class is set before first paint by the inline script in `index.html`,
+ * so there is no flash of the wrong theme.
+ *
+ * Contrast, measured against the ground each value is used on:
+ *   light — ink-900 15.5:1, ink-500 4.7:1, ink-400 3.9:1 (subordinate only),
+ *           accent 5.1:1, every status 4.9–5.4:1
+ *   dark  — ink-900 17.4:1, ink-500 7.5:1, ink-400 5.3:1 (decoration only),
+ *           accent 6.8:1, every status 5.3–8.4:1
+ */
+:root {
+  color-scheme: light;
+
+  --c-canvas: 251 251 253;
+  --c-surface: 255 255 255;
+  --c-sunken: 245 245 247;
+  --c-raised: 245 245 247;
+
+  --c-line: 232 232 237;
+  --c-line-strong: 210 210 215;
+  --c-line-faint: 240 240 242;
+
+  --c-ink-900: 29 29 31;
+  --c-ink-800: 44 44 46;
+  --c-ink-700: 66 66 69;
+  --c-ink-600: 81 81 84;
+  --c-ink-500: 110 110 115;
+  /* Subordinate metadata. Below AA against the light band on purpose — it never
+     carries meaning on its own. Clears AA in the dark theme (4.9:1). */
+  --c-ink-400: 126 126 131;
+  --c-ink-300: 161 161 166;
+  --c-ink-200: 199 199 204;
+  --c-ink-100: 232 232 237;
+
+  /* #0066CC, not #0071E3: on the alternating band the lighter blue measured
+     4.31:1, which is not enough for link text. Hover is the lighter blue. */
+  --c-accent: 0 102 204;
+  --c-accent-hover: 0 113 227;
+  --c-accent-solid: 0 102 204;
+  --c-accent-solid-hover: 0 113 227;
+  --c-accent-soft: 239 246 255;
+  --c-accent-line: 185 217 251;
+
+  --c-state-active: 0 102 204;
+  --c-state-active-soft: 239 246 255;
+  --c-state-waiting: 138 90 0;
+  --c-state-waiting-soft: 253 246 231;
+  --c-state-human: 215 0 21;
+  --c-state-human-soft: 253 237 238;
+  --c-state-risk: 178 80 0;
+  --c-state-risk-soft: 253 241 231;
+  --c-state-resolved: 11 122 59;
+  --c-state-resolved-soft: 237 247 241;
+
+  /* Shadows are part of the theme: on a dark ground a shadow reads as a soft
+     edge of the surface rather than as darkness underneath it. */
+  --shadow-window: 0 24px 70px -40px rgb(0 0 0 / 0.35);
+  --shadow-float: 0 8px 28px -18px rgb(25 24 22 / 0.45);
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* A four-step depth ramp — sunken · canvas · surface · raised — so the rail,
+     the page, a sheet and a hover each sit on their own level. */
+  --c-canvas: 14 14 17;
+  --c-surface: 22 22 25;
+  --c-sunken: 6 6 7;
+  --c-raised: 33 33 38;
+
+  --c-line: 38 38 43;
+  --c-line-strong: 53 53 60;
+  --c-line-faint: 29 29 33;
+
+  --c-ink-900: 245 245 247;
+  --c-ink-800: 228 228 232;
+  --c-ink-700: 207 207 213;
+  --c-ink-600: 180 180 187;
+  --c-ink-500: 161 161 168;
+  --c-ink-400: 133 133 140;
+  --c-ink-300: 91 91 98;
+  --c-ink-200: 52 52 59;
+  --c-ink-100: 35 35 42;
+
+  /* Brighter than the light-theme blue so links stay legible on near-black. */
+  --c-accent: 76 158 234;
+  --c-accent-hover: 111 178 240;
+  /* The filled button keeps a deep blue, because white type has to sit on it. */
+  --c-accent-solid: 10 98 201;
+  --c-accent-solid-hover: 11 111 222;
+  --c-accent-soft: 16 33 56;
+  --c-accent-line: 30 58 92;
+
+  --c-state-active: 76 158 234;
+  --c-state-active-soft: 15 36 56;
+  --c-state-waiting: 224 168 60;
+  --c-state-waiting-soft: 42 34 19;
+  --c-state-human: 240 86 75;
+  --c-state-human-soft: 50 22 24;
+  --c-state-risk: 224 132 66;
+  --c-state-risk-soft: 44 28 16;
+  --c-state-resolved: 56 185 106;
+  --c-state-resolved-soft: 15 36 25;
+
+  --shadow-window: 0 0 0 1px rgb(255 255 255 / 0.05), 0 30px 70px -30px rgb(0 0 0 / 0.9);
+  --shadow-float: 0 0 0 1px rgb(255 255 255 / 0.05), 0 12px 32px -18px rgb(0 0 0 / 0.9);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Anchor links land below the sticky header, not under it. */
+    scroll-padding-top: 3.5rem;
+  }
+
+  /* Motion is a preference, not a default. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    @apply bg-canvas text-body text-ink-800 antialiased;
+    font-feature-settings: "cv05" 1, "ss01" 1;
+  }
+
+  /* Headings are the same family, set large, tight and heavy. */
+  h1,
+  h2,
+  h3 {
+    @apply font-sans font-semibold text-ink-900;
+  }
+
+  h1,
+  h2 {
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: rgb(var(--c-accent) / 0.24);
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/40 ring-offset-2 ring-offset-canvas;
+  }
+
+  ::placeholder {
+    @apply text-ink-400;
+  }
+
+  /* Deterministic columns for times, amounts and references. */
+  td,
+  th,
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /**
+   * The label for a value in a record.
+   *
+   * Sentence case, not uppercase; 11.5px minimum, not 10.5px; and `ink-500`,
+   * which clears 4.5:1 on the surface in both themes. Uppercase monospace at
+   * 10.5px was the thing that made the interface hard to read.
+   */
+  .field-label {
+    @apply text-label font-medium text-ink-500;
+  }
+
+  .meta {
+    @apply text-micro text-ink-500;
+  }
+
+  /* A record row: hairline separated, no container. */
+  .record-row {
+    @apply relative border-t border-line transition-colors duration-100;
+  }
+
+  .record-row:hover {
+    @apply bg-raised;
+  }
+
+  /* A single label/value line of a record. */
+  .record-line {
+    @apply grid grid-cols-[92px_minmax(0,1fr)] gap-x-5 border-t border-line-faint py-2.5 first:border-t-0 sm:grid-cols-[116px_minmax(0,1fr)];
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* One surface in the whole system: a bordered sheet for logs and forms. */
+  .sheet {
+    @apply rounded-lg border border-line bg-surface;
+  }
+
+  /* Elevation, declared per theme rather than as a fixed shadow. */
+  .elevate {
+    box-shadow: var(--shadow-window);
+  }
+
+  .float-shadow {
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Indeterminate progress is never faked; this marks a run that is genuinely
+     in flight, driven by the server's event stream. */
+  .live-dot {
+    animation: live-fade 1.6s ease-in-out infinite;
+  }
+
+  @keyframes live-fade {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  /* Entrance for stacked page content. Short, once, and never bouncy. */
+  .rise {
+    animation: rise 0.42s cubic-bezier(0.22, 0.68, 0.3, 1) both;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(7px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
